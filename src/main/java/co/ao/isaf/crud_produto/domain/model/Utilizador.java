@@ -2,6 +2,8 @@ package co.ao.isaf.crud_produto.domain.model;
 
 import co.ao.isaf.crud_produto.domain.enums.Perfil;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +28,10 @@ public class Utilizador implements UserDetails {
     private String password;
     private String username;
     private Perfil perfil;
+
+    public Utilizador(String name,String username,  String password, Perfil perfil) {
+        this.name = name; this.username = username; this.password = password; this.perfil = perfil;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

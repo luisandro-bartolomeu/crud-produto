@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.ao.isaf.crud_produto.api.repository.UserRepository;
+import co.ao.isaf.crud_produto.domain.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,8 +32,8 @@ public class UtilizadorService {
         this.tokenService = tokenService;
     }
 
-    public String Login(Utilizador utilizador){
-        var token = new UsernamePasswordAuthenticationToken(utilizador.getUsername(), utilizador.getPassword());
+    public UserProfileResponse Login(LoginRequest utilizador){
+        var token = new UsernamePasswordAuthenticationToken(utilizador.username(), utilizador.password());
         /*O que o authenticationManager.authenticate faz?Chama o UserDetailsService: O Spring Security pega no username e
         vai à base de dados (usando o método loadUserByUsername) para carregar os dados reais do utilizador.
         Valida a Password: Ele utiliza o codificador de passwords configurado (ex: BCryptPasswordEncoder)
@@ -43,18 +44,29 @@ public class UtilizadorService {
         Se a password estiver errada ou o utilizador não existir, o método lança uma exceção automaticamente
          (ex: BadCredentialsException).*/
         Authentication authenticate = authenticationManager.authenticate(token);
-        return tokenService.generateToken((Utilizador)authenticate.getPrincipal());
+        var u = ((Utilizador)authenticate.getPrincipal());
+        var tk = tokenService.generateToken(u);
+        return new UserProfileResponse(u.getUsername(), u.getPerfil(), tk);
     }
 
-    public Utilizador criaUtilizador(Utilizador utilizador){
-
+    public RegisterResponse criaUtilizador(RegisterRequest registerRequest){
+        var utilizador = mapDtoToUtilizador(registerRequest);
         utilizador.setPassword(passwordEncoder.encode(utilizador.getPassword()));
-        userRepository.save(utilizador);
-        return utilizador;  
+        utilizador = userRepository.save(utilizador);
+        return mapUtilizadorToDto(utilizador);
     }
 
-    public List<Utilizador> listarUtilizadors (){
-        return userRepository.findAll();
-    } 
+    public List<RegisterResponse> listarUtilizadors (){
+        return userRepository.findAll().stream().map(utilizador -> {
+            return new RegisterResponse(utilizador.getId(), utilizador.getName(), utilizador.getUsername(), utilizador.getPerfil());
+        }).toList();
+    }
+
+    private RegisterResponse mapUtilizadorToDto(Utilizador utilizador){
+        return new RegisterResponse(utilizador.getId(),utilizador.getName(), utilizador.getUsername(), utilizador.getPerfil());
+    }
+     private Utilizador mapDtoToUtilizador(RegisterRequest registerRequest){
+        return new Utilizador(registerRequest.name(),registerRequest.username(), registerRequest.password(), registerRequest.perfil());
+     }
 
 }

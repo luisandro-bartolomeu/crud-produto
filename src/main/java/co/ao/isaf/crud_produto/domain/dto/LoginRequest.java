@@ -1,9 +1,8 @@
 package co.ao.isaf.crud_produto.domain.dto;
+import jakarta.validation.constraints.NotBlank;
 
-import lombok.Data;
-
-@Data
-public class LoginRequest {
-    private String username;
-    private String password;
+public record LoginRequest(
+        @NotBlank String username,
+        @NotBlank String password
+) {
 }
