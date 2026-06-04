@@ -1,6 +1,6 @@
 package co.ao.isaf.crud_produto.api.service;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 import co.ao.isaf.crud_produto.api.repository.UserRepository;
@@ -12,8 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import co.ao.isaf.crud_produto.domain.enums.Perfil;
 import co.ao.isaf.crud_produto.domain.model.Utilizador;
 
 @Service

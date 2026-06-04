@@ -23,6 +23,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("erro: ", ex.getMessage()));
     }
 
+    @ExceptionHandler(EncomendaNaoEncontradaException.class)
+    public ResponseEntity<Map<String, String>> handleNotFound(EncomendaNaoEncontradaException ex){
+        logger.warn("[ERRO] Encomenda não encontrada: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("erro: ", ex.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex){
+        logger.warn("[ERRO] Requisição inválida: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("erro", ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handlerValidation(MethodArgumentNotValidException ex){
         logger.warn("[ERRO] Validação falhou com {} erros", ex.getBindingResult().getErrorCount());

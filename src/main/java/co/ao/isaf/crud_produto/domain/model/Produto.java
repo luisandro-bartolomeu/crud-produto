@@ -1,78 +1,50 @@
 package co.ao.isaf.crud_produto.domain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Table(name = "produto",
+        indexes = {
+                @Index(name = "idx_produto_nome", columnList = "nome"),
+                @Index(name = "idx_produto_preco", columnList = "preco"),
+                @Index(name = "idx_produto_categoria", columnList = "categoria_id"),
+                @Index(name = "idx_produto_stock", columnList = "stock"),
+                @Index(name = "idx_produto_nome_preco", columnList = "nome, preco")
+        })
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Produto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "O nome não pode estar vazio")
+    @Column(nullable = false, length = 200)
     private String nome;
-    
+
+    @Column(length = 1000)
     private String descricao;
 
-    @NotNull(message = "O preço é obrigatório")
-    @PositiveOrZero(message = "O preço não pode ser negativo")
+    @Column(nullable = false)
     private Double preco;
 
-    @Min(value = 0, message = "o stock não pode ser negativo")
-    private Long qtdStock;
+    @Column(nullable = false)
+    private Integer stock;
 
+    @ManyToOne
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
 
-    public Produto(Long id, String nome, String descricao, Double preco, Long qtdStock) {
-        this.id = id;
-        this.nome = nome;
-        this.descricao = descricao;
-        this.preco = preco;
-        this.qtdStock = qtdStock;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public Double getPreco() {
-        return preco;
-    }
-
-    public void setPreco(Double preco) {
-        this.preco = preco;
-    }
-
-    public Long getQtdStock() {
-        return qtdStock;
-    }
-
-    public void setQtdStock(Long qtdStock) {
-        this.qtdStock = qtdStock;
-    }
+    @JsonIgnore
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL)
+    private List<EncomendaItem> encomendaItens = new ArrayList<>();
 }
+

@@ -13,7 +13,9 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "utilizadores")
+@Table(name = "utilizador", indexes = {
+        @Index(name = "idx_utilizador_username", columnList = "username")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -27,6 +29,7 @@ public class Utilizador implements UserDetails {
     private String name;
     private String password;
     private String username;
+    @Enumerated(EnumType.STRING)
     private Perfil perfil;
 
     public Utilizador(String name,String username,  String password, Perfil perfil) {
